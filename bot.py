@@ -8,8 +8,8 @@ from colored import fg, bg, attr
 
 client = Bot(command_prefix=None, pm_help=False)
 ostreamHandles = {}
-EMAIL = 'iseurie@gmail.com'
-PASS = 'colts gotta fap'
+EMAIL = 'Email'
+PASS = 'pw'
 LOG = True
 
 
