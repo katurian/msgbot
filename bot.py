@@ -130,7 +130,6 @@ async def on_ready():
 
 
 if __name__ == '__main__':
-    global LOG, EMAIL, PASS
     LOG = bool(getenv('MSGBOT_LOG'))
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
