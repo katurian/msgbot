@@ -8,10 +8,10 @@ from colored import fg, bg, attr
 
 client = Bot(command_prefix=None, pm_help=False)
 ostreamHandles = {}
-EMAIL = 'iseurie@gmail.com'
-PASS = 'colts gotta fap'  # how 2 lose rep 4 dummies
-LOG = True  # maybe don't hardcode your logging flag? i recommend an envvar
 
+EMAIL = 'Email'
+PASS = 'pw'
+LOG = True
 
 @client.event
 async def on_message(message):
