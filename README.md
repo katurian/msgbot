@@ -8,7 +8,7 @@ In the same directory as `bot.py` (Mac/Linux):
 ```sh
 $ MSGBOT_EMAIL=<email> MSGBOT_PASS=<password> python3.py`
 $ # or...
-$ MSGBOT_TOKEN=<token> python3 bot.py`
+$ MSGBOT_TOKEN=<token> python3 bot.py
 ```
 
 on Windows:
