@@ -5,10 +5,13 @@ Currently persists a timestamp, Author ID, Guild ID (where applicable), channel 
 
 ## Usage
 In the same directory as `bot.py` (Mac/Linux):
-- `$ MSGBOT_EMAIL=<email> MSGBOT_PASS=<password> python3.py`
-- `$ MSGBOT_TOKEN=<bot token> python3 bot.py`
+```sh
+$ MSGBOT_EMAIL=<email> MSGBOT_PASS=<password> python3.py`
+$ # or...
+$ MSGBOT_TOKEN=<token> python3 bot.py`
+```
 
-Or, on Windows:
+on Windows:
 ```cmd
 > SET MSGBOT_EMAIL=<email> && SET MSGBOT_PASS=<pass>
 > REM or...
