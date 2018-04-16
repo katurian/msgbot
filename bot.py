@@ -146,9 +146,15 @@ if __name__ == '__main__':
     if EMAIL:
         TOKEN = None
     credentials = TOKEN or (EMAIL, PASS)
-    client.run(*credentials)
     if LOG:
         print(f'{fg(3)}Logging...{attr(0)}')
+
+    try:
+        client.run(*credentials)
+    except Exception as what:
+        stderr.write(f'Error starting client session: {what}\n')
+        exit(hash(what) % 0x50 + 1)
+
     # get rid of any remaining file handles following completion
     # of client event loop
     for k, f in ostreamHandles.items():
