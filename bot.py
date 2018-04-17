@@ -5,8 +5,6 @@ import time
 from string import whitespace
 from asyncio import get_event_loop
 from colored import fg, bg, attr
-from os import getenv
-from sys import stderr
 
 client = Bot(command_prefix=None, pm_help=False)
 
@@ -129,28 +127,53 @@ async def on_ready():
         print(f'{fg(2)}Logged in{attr(0)}')
 
 
+def cmdline():
+    from sys import argv
+    from os import environ
+    import re
+    global LOG
+
+    usage = ['usage:',
+             f'{argv[0]} \'<email>\' \'<pass>\'',
+             f'{argv[0]} \'<token\'',
+             f'{argv[0]} MSGBOT_TOKEN=\'<token>\'',
+             f'{argv[0]} MSGBOT_EMAIL=\'<email>\' MSGBOT_PASS=\'<pass>\'']
+    for i, s in enumerate(usage[1:]):
+        usage[i] = f'    {s}'
+    usage = '\n'.join(usage)
+
+    def usage():
+        print(usage)
+        exit(0)
+
+    if len(argv) >= 1:
+        LOG = True in {re.match(x, argv)
+                       for x in ['-v*', '--verbose',
+                                 '-l', '--logging']}
+        if len(argv) == 2:
+            return argv[1]
+        else:
+            return argv[1:3]
+    else:
+        credentials = {k: environ.get('MSGBOT_' + k.upper())
+                       for k in ['email', 'pass', 'token', 'log']}
+        LOG = bool(credentials['log'])
+        if False in {bool(credentials.get(k)) for k in ['email', 'pass']}:
+            if not credentials.get('token'):
+                usage()
+            else:
+                return credentials['token']
+        else:
+            return [credentials[k] for k in ['email', 'pass']]
+
+
 if __name__ == '__main__':
-    LOG = bool(getenv('MSGBOT_LOG'))
+    from sys import stderr
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
-    EMAIL = getenv('MSGBOT_EMAIL')
-    PASS = getenv('MSGBOT_PASS')
-    TOKEN = getenv('MSGBOT_TOKEN')
-    if not EMAIL:
-        stderr.write('missing credentials; please specify `MSGBOT_EMAIL`\n')
-    if not PASS:
-        stderr.write('missing credentials; please specify `MSGBOT_PASS`\n')
-    if not (EMAIL and PASS) or TOKEN:
-        exit(1)
-
-    if EMAIL:
-        TOKEN = None
-    credentials = TOKEN or (EMAIL, PASS)
-    if LOG:
-        print(f'{fg(3)}Logging...{attr(0)}')
 
     try:
-        client.run(*credentials)
+        client.run(*cmdline())
     except Exception as what:
         stderr.write(f'Error starting client session: {what}\n')
         exit(hash(what) % 0x50 + 1)
