@@ -1,0 +1,2 @@
+[filter "expandtab"]
+    clean = expand --tabs=4 --initial
