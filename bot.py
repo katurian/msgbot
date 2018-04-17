@@ -146,6 +146,9 @@ def cmdline():
         print(usage)
         exit(0)
 
+    if True in {x in argv for x in ['-h', '--help']}:
+        usage()
+
     if len(argv) > 1:
         LOG = True in {re.match(x, argv)
                        for x in ['-v*', '--verbose',
