@@ -146,7 +146,7 @@ def cmdline():
         print(usage)
         exit(0)
 
-    if len(argv) >= 1:
+    if len(argv) > 1:
         LOG = True in {re.match(x, argv)
                        for x in ['-v*', '--verbose',
                                  '-l', '--logging']}
