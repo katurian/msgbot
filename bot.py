@@ -142,12 +142,12 @@ def cmdline():
         usage[i] = f'    {s}'
     usage = '\n'.join(usage)
 
-    def usage():
+    def prnusage():
         print(usage)
         exit(0)
 
     if True in {x in argv for x in ['-h', '--help']}:
-        usage()
+        prnusage()
 
     if len(argv) > 1:
         LOG = True in {re.match(x, argv)
@@ -163,7 +163,7 @@ def cmdline():
         LOG = bool(credentials['log'])
         if False in {bool(credentials.get(k)) for k in ['email', 'pass']}:
             if not credentials.get('token'):
-                usage()
+                prnusage()
             else:
                 return credentials['token']
         else:
