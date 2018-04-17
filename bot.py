@@ -7,7 +7,6 @@ from asyncio import get_event_loop
 from colored import fg, bg, attr
 
 client = Bot(command_prefix=None, pm_help=False)
-
 ostreamHandles = {}
 
 
@@ -53,7 +52,7 @@ async def on_message(message):
     # quote every string up in our payload with any
     # whitespace + escape any quotation marks in that body
     for key, text in payload.items():
-        has_whitespace = True in [ws in text for ws in whitespace]
+        has_whitespace = True in {ws in text for ws in whitespace}
         if has_whitespace:
             payload[key] = '"' + text.replace('"', '\\"') + '"'
         else:
@@ -146,26 +145,25 @@ def cmdline():
         print(usage)
         exit(0)
 
-    if True in {x in argv for x in ['-h', '--help']}:
+    if True in {x in argv for x in {'-h', '--help'}}:
         prnusage()
 
     if len(argv) > 1:
-        LOG = True in {re.match(x, argv)
-                       for x in ['-v*', '--verbose',
-                                 '-l', '--logging']}
+        LOG = True in {x in argv for x in
+                       {'-v', '--verbose', '-l', '--logging'}}
         if len(argv) == 2:
             return argv[1]
         else:
             return argv[1:3]
     else:
         credentials = {k: environ.get('MSGBOT_' + k.upper())
-                       for k in ['email', 'pass', 'token', 'log']}
+                       for k in {'email', 'pass', 'token', 'log'}}
         LOG = bool(credentials['log'])
-        if False in {bool(credentials.get(k)) for k in ['email', 'pass']}:
+        if False in {bool(credentials.get(k)) for k in {'email', 'pass'}}:
             if not credentials.get('token'):
                 prnusage()
             else:
-                return credentials['token']
+                return [credentials['token']]
         else:
             return [credentials[k] for k in ['email', 'pass']]
 
@@ -175,11 +173,11 @@ if __name__ == '__main__':
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
 
-    try:
-        client.run(*cmdline())
-    except Exception as what:
-        stderr.write(f'Error starting client session: {what}\n')
-        exit(hash(what) % 0x50 + 1)
+    # try:
+    client.run(*cmdline())
+    # except Exception as what:
+    #     stderr.write(f'Error starting client session: {what}\n')
+    #     exit(hash(what) % 0x50 + 1)
 
     # get rid of any remaining file handles following completion
     # of client event loop
