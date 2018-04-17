@@ -139,7 +139,7 @@ def cmdline():
              f'{argv[0]} MSGBOT_TOKEN=\'<token>\'',
              f'{argv[0]} MSGBOT_EMAIL=\'<email>\' MSGBOT_PASS=\'<pass>\'']
     for i, s in enumerate(usage[1:]):
-        usage[i] = f'    {s}'
+        usage[i+1] = f'    {s}'
     usage = '\n'.join(usage)
 
     def prnusage():
