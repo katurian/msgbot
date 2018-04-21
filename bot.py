@@ -128,13 +128,12 @@ async def on_ready():
 
 
 def parseparams():
+    global LOG
+    global AUTH
+
     from sys import argv
     from os import environ
     from re import match
-    global LOG
-    global EMAIL
-    global PASS
-    global TOKEN
 
     usage = ['usage:',
              f'{argv[0]} \'<email>\' \'<pass>\'',
@@ -154,32 +153,30 @@ def parseparams():
 
     if len(argv) > 1:
         cmdln = ' '.join(argv)
-        LOG = True in {bool(match(x, cmdln)) for x in
-                       {'-v+', '--verbose', '-l', '--logging'}}
-        if len(argv) == 2:
-            return argv[1]
-        else:
-            return argv[1:3]
+        logflags = {'-v', '--verbose', '-l', '--logging'}
+        LOG = True in {p in cmdln for p in logflags}
+        argv = [a for a in argv if a not in logflags]
+        AUTH = (argv[1]) if len(argv) == 2 else tuple(argv[1:3])
     else:
-        credentials = {k: environ.get('MSGBOT_' + k.upper())
-                       for k in {'email', 'pass', 'token', 'log'}}
-        LOG = bool(credentials['log'])
-        if False in {bool(credentials.get(k)) for k in {'email', 'pass'}}:
-            if not credentials.get('token'):
-                prnusage()
-            else:
-                return [credentials['token']]
+        env = {k: environ.get('MSGBOT_' + k.upper())
+               for k in ['email', 'pass', 'token', 'log']}
+        LOG = bool(env['log'])
+        if False in {bool(env.get(k)) for k in {'email', 'pass'}}:
+            AUTH = (env.get('token'))
         else:
-            return [credentials[k] for k in ['email', 'pass']]
+            AUTH = (env[k] for k in ('email', 'pass'))
+    if not AUTH:
+        prnusage()
+        exit(0)
 
 
 if __name__ == '__main__':
-    from sys import stderr
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
 
     # try:
-    client.run(*parseparams())
+    parseparams()
+    client.run(*AUTH)
     # except Exception as what:
     #     stderr.write(f'Error starting client session: {what}\n')
     #     exit(hash(what) % 0x50 + 1)
