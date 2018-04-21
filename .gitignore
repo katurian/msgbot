@@ -1,2 +1,13 @@
 **/*.csv
 __pycache__/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]hare
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json

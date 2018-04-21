@@ -125,56 +125,22 @@ async def on_ready():
     if LOG:
         print(f'{fg(2)}Logged in{attr(0)}')
 
-
-def cmdline():
-    from sys import argv
-    from os import environ
-    import re
-    global LOG
-
-    usage = ['usage:',
-             f'{argv[0]} \'<email>\' \'<pass>\'',
-             f'{argv[0]} \'<token\'',
-             f'{argv[0]} MSGBOT_TOKEN=\'<token>\'',
-             f'{argv[0]} MSGBOT_EMAIL=\'<email>\' MSGBOT_PASS=\'<pass>\'']
-    for i, s in enumerate(usage[1:]):
-        usage[i+1] = f'    {s}'
-    usage = '\n'.join(usage)
-
-    def prnusage():
-        print(usage)
-        exit(0)
-
-    if True in {x in argv for x in {'-h', '--help'}}:
-        prnusage()
-
-    if len(argv) > 1:
-        LOG = True in {x in argv for x in
-                       {'-v', '--verbose', '-l', '--logging'}}
-        if len(argv) == 2:
-            return argv[1]
-        else:
-            return argv[1:3]
-    else:
-        credentials = {k: environ.get('MSGBOT_' + k.upper())
-                       for k in {'email', 'pass', 'token', 'log'}}
-        LOG = bool(credentials['log'])
-        if False in {bool(credentials.get(k)) for k in {'email', 'pass'}}:
-            if not credentials.get('token'):
-                prnusage()
-            else:
-                return [credentials['token']]
-        else:
-            return [credentials[k] for k in ['email', 'pass']]
-
-
 if __name__ == '__main__':
     from sys import stderr
+
+    import argparse
+    parser = argparse.ArgumentParser(description='Collect discord message data in .csv files')
+    parser.add_argument('token', help='Your login token')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose logging', dest='LOG')
+    args = parser.parse_args()
+    global LOG
+    LOG = args.LOG
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
 
     # try:
-    client.run(*cmdline())
+    # client.run(*cmdline())
+    client.run(args.token, bot=False)
     # except Exception as what:
     #     stderr.write(f'Error starting client session: {what}\n')
     #     exit(hash(what) % 0x50 + 1)
