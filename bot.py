@@ -32,7 +32,8 @@ async def on_message(message):
         doAppendHeaders = True
     if oid not in ostreamHandles.keys():  # if oid isn't a key
         ostreamHandles[oid] = await aiofiles.open(opath, 'a')
-        print(f'{fg(3)}open `{opath}`{attr(0)}')
+        if LOG:
+            print(f'{fg(3)}open `{opath}`{attr(0)}')
     ostrm = ostreamHandles[oid]
     if doAppendHeaders:
         await ostrm.write(','.join(headers) + '\n')
@@ -40,7 +41,7 @@ async def on_message(message):
     timestamp = int(time.time())
     payload = {'when': timestamp,
                'what': message.content,
-               'uid': oid if dm else '',
+               'uid': message.author.id,
                'cid': message.channel.id or '',
                'gid': oid if not dm else ''}
 
@@ -77,7 +78,7 @@ async def on_message(message):
             ucolor = 0  # init ucolor variable
             for i in range(3):
                 # decode the color value for each step
-                ucolor = (message.author.color.value // (1 << 9))
+                ucolor = (message.author.color.value // (1 << i+1))
             # map the scalar value to a terminal escape code
             ucolor = fg(ucolor)
         else:
@@ -126,15 +127,42 @@ async def on_ready():
         print(f'{fg(2)}Logged in{attr(0)}')
 
 
-def cmdline():
+class RC(object):
     from sys import argv
     from os import environ
+    from argparse import ArgumentParser as AP
     import re
+    __slots__ = ['email', 'pass', 'token', 'verbosity']
+
+    def __init__(self, argv=argv):
+        '''
+        Initializes the configuration given a set of command-line arguments.
+        Falls back to environment variables corresponding to capitalized slot
+        names as prefixed with `MSGBOT_`.
+        '''
+        self = {k: None for k in self.__class__.__slots__}
+
+        def ckp(s):
+            if f'-{s[0]}*'
+    
+    def env(s):
+        return environ[f'MSGBOT_{s}']
+
+
+
+
+def parseparams():
+    from sys import argv
+    from os import environ
+    from re import match
     global LOG
+    global EMAIL
+    global PASS
+    global TOKEN
 
     usage = ['usage:',
              f'{argv[0]} \'<email>\' \'<pass>\'',
-             f'{argv[0]} \'<token\'',
+             f'{argv[0]} \'<token>\'',
              f'{argv[0]} MSGBOT_TOKEN=\'<token>\'',
              f'{argv[0]} MSGBOT_EMAIL=\'<email>\' MSGBOT_PASS=\'<pass>\'']
     for i, s in enumerate(usage[1:]):
@@ -149,8 +177,9 @@ def cmdline():
         prnusage()
 
     if len(argv) > 1:
-        LOG = True in {x in argv for x in
-                       {'-v', '--verbose', '-l', '--logging'}}
+        cmdln = ' '.join(argv)
+        LOG = True in {bool(match(x, cmdln)) for x in
+                       {'-v+', '--verbose', '-l', '--logging'}}
         if len(argv) == 2:
             return argv[1]
         else:
