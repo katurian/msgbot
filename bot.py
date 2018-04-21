@@ -13,7 +13,7 @@ ostreamHandles = {}
 @client.event
 async def on_message(message):
     global ostreamHandles  # declare mutation to global handle store
-
+    global LOG
     headers = ['When', 'UID', 'CID', 'GID', 'What']
 
     if message.author.id is None or not message.content:
@@ -74,23 +74,25 @@ async def on_message(message):
     if LOG:  # if we're logging,
         # guard for author's color attribute; Users don't
         # have one, some server Members do
-        if hasattr(message.author, 'color'):
-            ucolor = 0  # init ucolor variable
-            for i in range(3):
-                # decode the color value for each step
-                ucolor = (message.author.color.value // (1 << i+1))
-            # map the scalar value to a terminal escape code
-            ucolor = fg(ucolor)
-        else:
-            ucolor = attr('reset')
+        # if hasattr(message.author, 'color'):
+        #     ucolor = 0  # init ucolor variable
+        #     for i in range(3):
+        #         # decode the color value for each step
+        #         ucolor = (message.author.color.value // (1 << i+1))
+        #     # map the scalar value to a terminal escape code
+        #     ucolor = fg(ucolor)
+        # else:
+        #     ucolor = attr('reset')
         gChannel = message.channel.name or ''
         gTitle = message.server.name if not dm else 'DM'
-        utag = (f'{ucolor}'
+        utag = (
+                # f'{ucolor}'
                 f'{message.author.name}'
-                f'{attr(0)}#'
-                f'{ucolor}'
+                # f'{attr(0)}#'
+                # f'{ucolor}'
                 f'{message.author.discriminator}'
-                f'{attr(0)}')
+                # f'{attr(0)}'
+                )
         content = message.content
         if len(message.mentions) != 0:
             content = f'{bg(4)}{fg(0)}{content}{attr(0)}'
@@ -133,8 +135,6 @@ def parseparams():
 
     from sys import argv
     from os import environ
-    from re import match
-
     usage = ['usage:',
              f'{argv[0]} \'<email>\' \'<pass>\'',
              f'{argv[0]} \'<token>\'',
@@ -174,12 +174,13 @@ if __name__ == '__main__':
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
 
-    # try:
     parseparams()
-    client.run(*AUTH)
-    # except Exception as what:
-    #     stderr.write(f'Error starting client session: {what}\n')
-    #     exit(hash(what) % 0x50 + 1)
+    try:
+        client.run(*AUTH)
+    except Exception as what:
+        from sys import stderr
+        stderr.write(f'Error starting client session: {what}\n')
+        exit(hash(what) % 0x50 + 1)
 
     # get rid of any remaining file handles following completion
     # of client event loop
