@@ -72,17 +72,6 @@ async def on_message(message):
     values = [payload[k] for k in lHeaders]
     await ostrm.write(','.join(values) + '\n')
     if LOG:  # if we're logging,
-        # guard for author's color attribute; Users don't
-        # have one, some server Members do
-        # if hasattr(message.author, 'color'):
-        #     ucolor = 0  # init ucolor variable
-        #     for i in range(3):
-        #         # decode the color value for each step
-        #         ucolor = (message.author.color.value // (1 << i+1))
-        #     # map the scalar value to a terminal escape code
-        #     ucolor = fg(ucolor)
-        # else:
-        #     ucolor = attr('reset')
         gChannel = message.channel.name or ''
         gTitle = message.server.name if not dm else 'DM'
         utag = (
