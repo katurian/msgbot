@@ -127,25 +127,6 @@ async def on_ready():
         print(f'{fg(2)}Logged in{attr(0)}')
 
 
-class RC(object):
-    from sys import argv
-    from argparse import ArgumentParser as AP
-    import re
-    __slots__ = ['email', 'pass', 'token', 'verbosity']
-
-    def __init__(self, argv=argv):
-        '''
-        Initializes the configuration given a set of command-line arguments.
-        Falls back to environment variables corresponding to capitalized slot
-        names as prefixed with `MSGBOT_`.
-        '''
-        self = {k: None for k in self.__class__.__slots__}
-
-    def env(s):
-        from os import environ
-        return environ[f'MSGBOT_{s}']
-
-
 def parseparams():
     from sys import argv
     from os import environ
