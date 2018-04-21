@@ -179,7 +179,7 @@ if __name__ == '__main__':
     # handles? just messages?  both?)
 
     # try:
-    client.run(*cmdline())
+    client.run(*parseparams())
     # except Exception as what:
     #     stderr.write(f'Error starting client session: {what}\n')
     #     exit(hash(what) % 0x50 + 1)
