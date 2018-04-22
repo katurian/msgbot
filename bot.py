@@ -13,7 +13,7 @@ ostreamHandles = {}
 @client.event
 async def on_message(message):
     global ostreamHandles  # declare mutation to global handle store
-
+    global LOG
     headers = ['When', 'UID', 'CID', 'GID', 'What']
 
     if message.author.id is None or not message.content:
@@ -32,7 +32,8 @@ async def on_message(message):
         doAppendHeaders = True
     if oid not in ostreamHandles.keys():  # if oid isn't a key
         ostreamHandles[oid] = await aiofiles.open(opath, 'a')
-        print(f'{fg(3)}open `{opath}`{attr(0)}')
+        if LOG:
+            print(f'{fg(3)}open `{opath}`{attr(0)}')
     ostrm = ostreamHandles[oid]
     if doAppendHeaders:
         await ostrm.write(','.join(headers) + '\n')
@@ -40,7 +41,7 @@ async def on_message(message):
     timestamp = int(time.time())
     payload = {'when': timestamp,
                'what': message.content,
-               'uid': oid if dm else '',
+               'uid': message.author.id,
                'cid': message.channel.id or '',
                'gid': oid if not dm else ''}
 
@@ -71,25 +72,16 @@ async def on_message(message):
     values = [payload[k] for k in lHeaders]
     await ostrm.write(','.join(values) + '\n')
     if LOG:  # if we're logging,
-        # guard for author's color attribute; Users don't
-        # have one, some server Members do
-        if hasattr(message.author, 'color'):
-            ucolor = 0  # init ucolor variable
-            for i in range(3):
-                # decode the color value for each step
-                ucolor = (message.author.color.value // (1 << 9))
-            # map the scalar value to a terminal escape code
-            ucolor = fg(ucolor)
-        else:
-            ucolor = attr('reset')
         gChannel = message.channel.name or ''
         gTitle = message.server.name if not dm else 'DM'
-        utag = (f'{ucolor}'
+        utag = (
+                # f'{ucolor}'
                 f'{message.author.name}'
-                f'{attr(0)}#'
-                f'{ucolor}'
+                # f'{attr(0)}#'
+                # f'{ucolor}'
                 f'{message.author.discriminator}'
-                f'{attr(0)}')
+                # f'{attr(0)}'
+                )
         content = message.content
         if len(message.mentions) != 0:
             content = f'{bg(4)}{fg(0)}{content}{attr(0)}'
@@ -127,26 +119,23 @@ async def on_ready():
 
 if __name__ == '__main__':
     import argparse
+    from sys import stderr
     parser = argparse.ArgumentParser(
         description='Collect discord message data in .csv files')
-    parser.add_argument('token', help='Your login token')
     parser.add_argument('--verbose', '-v', action='store_true',
-                        help='Enable verbose logging', dest='LOG')
+                        help='Enable verbose logging', dest='log')
+    parser.add_argument('--token', '-t', help='Your auth token', required=True)
     args = parser.parse_args()
     global LOG
-    LOG = args.LOG
+    LOG = args.log
     # TODO: Add multiple verbosity levels (just file
     # handles? just messages?  both?)
+    try:
+        client.run(args.token, bot=False)
+    except Exception as what:
+        stderr.write(f'Fail starting client session: {what}\n')
+        exit(hash(what) % 0x50 + 1)
 
-    # try:
-    # client.run(*cmdline())
-    client.run(args.token, bot=False)
-    # except Exception as what:
-    #     stderr.write(f'Error starting client session: {what}\n')
-    #     exit(hash(what) % 0x50 + 1)
-
-    # get rid of any remaining file handles following completion
-    # of client event loop
     for k, f in ostreamHandles.items():
         print(f'{fg(1)}Close `{k}.csv`...{attr(0)}')
         get_event_loop().run_until_complete(f.close())
