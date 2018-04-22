@@ -56,13 +56,11 @@ async def on_message(message):
         has_whitespace = True in {ws in text for ws in whitespace}
         if has_whitespace:
             payload[key] = '"' + text.replace('"', '\\"') + '"'
-        else:
-            payload[key] = text
 
     lHeaders = [head.lower() for head in headers]
     # Set difference: Everything included in lHeaders, but
     # not included in payload.keys()
-    missingKeys = set(lHeaders).difference(set(payload.keys()))
+    missingKeys = set(lHeaders) - set(payload.keys())
 
     if len(missingKeys) != 0:
         raise ValueError("Malformed `payload` dict; missing key: {}"
