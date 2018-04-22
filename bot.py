@@ -43,7 +43,7 @@ async def on_message(message):
                'what': message.content,
                'uid': message.author.id,
                'cid': message.channel.id or '',
-               'gid': oid if not dm else ''}
+               'gid': '' if dm else oid}
 
     # map everything over to strings; make sure no line
     # separators occur
