@@ -126,12 +126,12 @@ async def on_ready():
         print(f'{fg(2)}Logged in{attr(0)}')
 
 if __name__ == '__main__':
-    from sys import stderr
-
     import argparse
-    parser = argparse.ArgumentParser(description='Collect discord message data in .csv files')
+    parser = argparse.ArgumentParser(
+        description='Collect discord message data in .csv files')
     parser.add_argument('token', help='Your login token')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose logging', dest='LOG')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Enable verbose logging', dest='LOG')
     args = parser.parse_args()
     global LOG
     LOG = args.LOG
