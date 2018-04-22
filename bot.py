@@ -122,7 +122,7 @@ if __name__ == '__main__':
         description='Collect discord message data in .csv files')
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Enable verbose logging', dest='log')
-    parser.add_argument('--token', '-t', help='Your auth token', required=True)
+    parser.add_argument('token', help='Your auth token', required=True)
     args = parser.parse_args()
     global LOG
     LOG = args.log
