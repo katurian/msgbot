@@ -1,17 +1,22 @@
 # msgbot
 A Python Discord selfbot that stores user messages in individual .csv (comma-separated value) files.
 
-Currently persists a timestamp, Author ID, Guild ID (where applicable), channel ID, and message contents. Private messages are persisted in files corresponding to recipient channel IDs, while guild messages are stored in files corresponding to the guild ID.
+Currently persists a timestamp, Author ID, Author name, channel ID, and message contents. 
 
-## Setup
+## Requirements
+* Python
+* userlog.py or serverlog.py
+* A Discord account
+* discord, aiofiles, arrow
 
-* Setup your venv with `virtualenv .`
-* Activate venv with `source bin/activate`
-    * If `python` on your system does not point to python >= 3.6, specify your python >= 3.6 executable with --python (e.g. `virtualenv --python=python3.6 .`)
-* Install deps with `pip install -r requirements.txt`
+
 
 ## Usage
-
-* Activate venv: `source bin/activate`
-* Run `python bot.py <token>`
+* Create an alternate Discord account then join the server you plan to log
+* Paste the account's email and password into either userlog.py or serverlog.py
+* For serverlog.py: replace "Server_Name" on line 11 with the name of the server you are logging
+* Login into your alternate Discord account
+* Run userlog.py or serverlog.py on PC
+* At the very top of Server_Name.txt, paste the following headers: Date, Time, UID, Name, Channel, Message
+* Save Server_Name.txt as a .csv, then open in WPS Spreadsheets, Microsoft Excel, or similar software. 
 
